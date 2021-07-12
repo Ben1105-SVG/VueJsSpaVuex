@@ -9,23 +9,37 @@
 
                     <h2>Sign Up</h2>
 
-                    <form action="" method="post" class="form">
+                    <form method="post"  @submit.prevent="send_form" class="form">
                         <div class="form__field">
-                            <input type="text" name="username" value=""  placeholder="Username">
+                            <input type="text" name="username" value="" v-model="form_fields.username"  placeholder="Username">
                         </div>
-                        <div class="form__field">
-                            <input type="text" name="phone" value="" placeholder="Phone">
-                        </div>
-
-                        <div class="form__field">
-                            <input type="email" name="email" value="" placeholder="info@mailaddress.com">
+                        <div class="form__field" v-show="getErrors.username">
+                              <input type="text" disabled :value=" getErrors.username" class="bg-danger">
                         </div>
 
                         <div class="form__field">
-                            <input type="password" name="password" value="" placeholder="•••••••••">
+                            <input type="text" name="phone" value="" v-model="form_fields.phone" placeholder="Phone">
                         </div>
+                        <div class="form__field" v-show="getErrors.phone">
+                            <input type="text" disabled :value=" getErrors.phone" class="bg-danger">
+                        </div>
+
                         <div class="form__field">
-                            <input type="password" name="password_confirmation" placeholder="•••••••••">
+                            <input type="email" name="email" value="" v-model="form_fields.email" placeholder="info@mailaddress.com">
+                        </div>
+                        <div class="form__field" v-show="getErrors.email">
+                            <input type="text" disabled :value=" getErrors.email" class="bg-danger">
+                        </div>
+
+                        <div class="form__field">
+                            <input type="password" name="password" value="" v-model="form_fields.password" placeholder="•••••••••">
+                        </div>
+                        <div class="form__field" v-show="getErrors.password">
+                            <input type="text" disabled :value=" getErrors.password" class="bg-danger">
+                        </div>
+
+                        <div class="form__field">
+                            <input type="password" name="password_confirmation" v-model="form_fields.password_confirmation" placeholder="•••••••••">
                         </div>
                         <div class="form__field">
                             <input type="submit" value="Sign Up">
@@ -45,7 +59,42 @@
 
 <script>
 export default {
-    name: "Register"
+    name: "Register",
+    data(){
+        return{
+            form_fields: {
+                username: '',
+                email: '',
+                phone: '',
+                password: '',
+                password_confirmation: ''
+            },
+            success: false,
+            errors: []
+        }
+    },
+    methods:{
+        send_form(){
+            this.$store.dispatch('registration_form_submit',this.form_fields)
+        }
+    },
+    watch: {
+        getSuccess:function (){
+             this.success = this.getSuccess;
+            this.$router.push('login')
+        },
+        getErrors:function (){
+            this.errors = this.getErrors
+        }
+    },
+    computed:{
+      getSuccess(){
+          return  this.$store.getters.getFormResponse.success
+      },
+      getErrors(){
+          return  this.$store.getters.getFormResponse.errors
+      }
+    },
 }
 </script>
 

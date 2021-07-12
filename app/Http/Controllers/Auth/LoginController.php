@@ -6,26 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
-    /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
-     */
-    public function index()
-    {
-        return view('Auth/login');
-    }
 
     /**
      * @param LoginRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(LoginRequest $request)
     {
+
         if(Auth::attempt($request->all())){
-            return redirect()->route('home.index');
+            $token = auth()->user()->createToken('MyApp')->accessToken;
+
+          return  response()->json($token,200);
         }
-        return back()->withErrors(['email'=>'User with this credentials is not found']);
+      return  response()->json(['message'=>['email'=>'User with this credentials is not found']],422);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function logOut(Request $request){
+        $token = $request->user()->token();
+        $token->revoke();
+        DB::table('oauth_access_tokens')->where('user_id');
+        return response(['logout' => 'true'], 200);
     }
 }

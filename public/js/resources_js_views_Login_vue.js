@@ -42,13 +42,46 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
-    return {};
+    return {
+      fieldsData: {
+        email: '',
+        password: ''
+      },
+      success: false,
+      error: []
+    };
   },
   methods: {
-    form_submit: function form_submit() {
-      this.$store.dispatch('');
+    send_form: function send_form() {
+      var _this = this;
+
+      this.$store.dispatch('login_form_submit', this.fieldsData).then(function (response) {
+        _this.$store.dispatch('User/get_user_data').then(function () {
+          _this.$router.push('home');
+        });
+      });
+    }
+  },
+  watch: {
+    getErrors: function getErrors() {
+      this.error = this.getErrors;
+    }
+  },
+  computed: {
+    getErrors: function getErrors() {
+      return this.$store.getters.get_response.error;
+    },
+    getSuccess: function getSuccess() {
+      return this.$store.getters.check_user_token;
     }
   }
 });
@@ -167,10 +200,10 @@ var render = function() {
                     { attrs: { id: "a", x1: "0%", y1: "0%", y2: "0%" } },
                     [
                       _c("stop", {
-                        attrs: { offset: "0%", "stop-color": "#8ceabb" }
+                        attrs: { offset: "0%", "stop-color": "#cd853f" }
                       }),
                       _c("stop", {
-                        attrs: { offset: "100%", "stop-color": "#378f7b" }
+                        attrs: { offset: "100%", "stop-color": "#cd853f" }
                       })
                     ],
                     1
@@ -194,14 +227,115 @@ var render = function() {
             "form",
             {
               staticClass: "form",
-              attrs: { action: "", method: "post" },
+              attrs: { method: "post" },
               on: {
                 submit: function($event) {
                   $event.preventDefault()
+                  return _vm.send_form.apply(null, arguments)
                 }
               }
             },
-            [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._m(2)]
+            [
+              _c("div", { staticClass: "form__field" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.fieldsData.email,
+                      expression: "fieldsData.email"
+                    }
+                  ],
+                  attrs: {
+                    type: "email",
+                    name: "email",
+                    placeholder: "info@mailaddress.com"
+                  },
+                  domProps: { value: _vm.fieldsData.email },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.fieldsData, "email", $event.target.value)
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error.email,
+                      expression: "error.email"
+                    }
+                  ],
+                  staticClass: "form__field"
+                },
+                [
+                  _c("input", {
+                    staticClass: "bg-danger",
+                    attrs: { type: "text", disabled: "" },
+                    domProps: { value: _vm.error.email }
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "form__field" }, [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.fieldsData.password,
+                      expression: "fieldsData.password"
+                    }
+                  ],
+                  attrs: {
+                    type: "password",
+                    name: "password",
+                    placeholder: "•••••••••"
+                  },
+                  domProps: { value: _vm.fieldsData.password },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(_vm.fieldsData, "password", $event.target.value)
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.error.password,
+                      expression: "error.password"
+                    }
+                  ],
+                  staticClass: "form__field"
+                },
+                [
+                  _c("input", {
+                    staticClass: "bg-danger",
+                    attrs: { type: "text", disabled: "" },
+                    domProps: { value: _vm.error.password }
+                  })
+                ]
+              ),
+              _vm._v(" "),
+              _vm._m(0)
+            ]
           ),
           _vm._v(" "),
           _c(
@@ -220,30 +354,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form__field" }, [
-      _c("input", {
-        attrs: {
-          type: "email",
-          name: "email",
-          placeholder: "info@mailaddress.com"
-        }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form__field" }, [
-      _c("input", {
-        attrs: { type: "password", name: "password", placeholder: "•••••••••" }
-      })
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

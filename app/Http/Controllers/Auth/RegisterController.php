@@ -29,9 +29,8 @@ class RegisterController extends Controller
      */
     public function store(RegisterRequest $request)
     {
-        return 123;
         $this->userRepository->create($request->all());
-        return redirect()->route('login.index')->with(['registerSuccess'=> true]);
+        return response()->json(['registerSuccess'=> true]);
     }
 }
 

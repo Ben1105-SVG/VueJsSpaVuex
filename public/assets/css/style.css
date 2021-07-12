@@ -105,14 +105,35 @@ a {
 }
 
 .register input[type="submit"] {
-    background-image: linear-gradient(160deg, #8ceabb 0%, #378f7b 100%);
+    background: peru;
     color: #fff;
     margin-bottom: 6rem;
     width: 100%;
 }
-.bg-danger{
+.form__field .bg-danger{
     border: 1px solid red!important;
     color: red!important;
+    background: white!important;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}
+.posts h2{
+    text-align: center;
+}
+section.posts{
+    padding: 20px;
+    background: rgb(205 133 63 / 59%);
+    border-radius: 20px;
+    width: 40%;
+    margin: 120px auto;
+}
+.form-cont textarea{
+    width: 80%;
+    border-radius: 20px;
+    outline: none;
+    padding: 10px;
+    border: 1px solid gray
 }
 .alert-success{
     background-color: #4dc0b5;
@@ -120,4 +141,233 @@ a {
     border-radius: 10px;
     border: 1px solid darkcyan;
     margin-bottom: 10px;
+}
+.form-cont{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+label[for=textarea_post]{
+    width: 71%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.custom-file{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 60%;
+    height: unset;
+}
+.form-cont button{
+    outline: none;
+}
+body{margin-top:20px;
+    background:#eee;
+}
+@import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+
+body {
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+}
+
+.header {
+    padding-top: 20px;
+    background: peru;
+    color: white;
+    clip-path: ellipse(100vw 60vh at 50% 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0px 16px 15px 11px rgba(0,0,0,0.23)
+;
+}
+
+.details {
+    text-align: center;
+    width: 45%;
+}
+.profile{
+    padding-bottom: 27px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid lightgray;
+}
+.profile-pic {
+    height: 6rem;
+    width: 6rem;
+    object-fit: center;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.location p {
+    display: inline-block;
+}
+
+.location svg {
+    vertical-align: middle;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.stats .col-4 {
+    width: 10rem;
+    text-align: center;
+}
+
+.heading {
+    font-weight: 400;
+    font-size: 1.3rem;
+    margin: 1rem 0;
+}
+.edit_profile{
+    justify-content: center;
+    padding: 25px;
+
+}
+.big_conteiner{
+    background: #fff;
+}
+.btn_submit_form{
+    background: peru;
+    border:unset;
+    outline: none;
+    color: #fff;
+    opacity: 0.7;
+}
+.btn_submit_form:hover{
+    opacity: 1;
+    color: #fff;
+}
+.header{
+    position: relative;
+}
+.logOut{
+    right: 15px;
+    top: 18px;
+    font-weight: bold;
+    position: absolute;
+    cursor: pointer;
+}
+.logOut:hover{
+    opacity: 0.5;
+}
+.form-check-label{
+    margin-right: 30px;
+}
+.modal-confirm {
+    color: #434e65;
+    width: 525px;
+}
+.modal-confirm .modal-content {
+    padding: 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+}
+.modal-confirm .modal-header {
+    background: #47c9a2;
+    border-bottom: none;
+    position: relative;
+    text-align: center;
+    margin: -20px -20px 0;
+    border-radius: 5px 5px 0 0;
+    padding: 35px;
+}
+.modal-confirm h4 {
+    text-align: center;
+    font-size: 36px;
+    margin: 10px 0;
+}
+.modal-confirm .form-control, .modal-confirm .btn {
+    min-height: 40px;
+    border-radius: 3px;
+}
+.modal-confirm .close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #fff;
+    text-shadow: none;
+    opacity: 0.5;
+}
+.modal-confirm .close:hover {
+    opacity: 0.8;
+}
+.modal-confirm .icon-box {
+    color: #fff;
+    width: 95px;
+    height: 95px;
+    display: inline-block;
+    border-radius: 50%;
+    z-index: 9;
+    border: 5px solid #fff;
+    padding: 15px;
+    text-align: center;
+}
+.modal-confirm .icon-box i {
+    font-size: 64px;
+    margin: -4px 0 0 -4px;
+}
+.modal-confirm.modal-dialog {
+    margin-top: 80px;
+}
+.modal-confirm .btn, .modal-confirm .btn:active {
+    color: #fff;
+    border-radius: 4px;
+    background: #eeb711 !important;
+    text-decoration: none;
+    transition: all 0.4s;
+    line-height: normal;
+    border-radius: 30px;
+    margin-top: 10px;
+    padding: 6px 20px;
+    border: none;
+}
+.modal-confirm .btn:hover, .modal-confirm .btn:focus {
+    background: #eda645 !important;
+    outline: none;
+}
+.modal-confirm .btn span {
+    margin: 1px 3px 0;
+    float: left;
+}
+.modal-confirm .btn i {
+    margin-left: 1px;
+    font-size: 20px;
+    float: right;
+}
+.trigger-btn {
+    display: inline-block;
+    margin: 100px auto;
+}
+.post-card{
+    margin-bottom: 25px;
+}
+.change_post{
+    display: flex;
+    justify-content: flex-end;
+}
+.change_post svg{
+    cursor: pointer;
+    margin:  0 5px
+}
+.change_post svg:hover{
+    opacity: 0.7;
+}
+.change_input{
+    outline: none;
+    border: none;
+    width: 100%;
+    background: #e2e2e2;
+    border: 1px solid lightgray;
 }

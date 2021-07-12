@@ -3,8 +3,8 @@
 
 namespace App\Repository\RepositoryInterfaces;
 
-
-use App\Models\User;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 interface UserRepositoryInterface
 {
@@ -14,4 +14,10 @@ interface UserRepositoryInterface
      */
     public function create(array $attributes);
 
+    /**
+     * @param array $details
+     * @param $id
+     * @return mixed
+     */
+    public function update(array $details, $id);
 }

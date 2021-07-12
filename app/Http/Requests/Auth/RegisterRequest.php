@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterRequest extends FormRequest
@@ -35,7 +37,7 @@ class RegisterRequest extends FormRequest
     {
         return [
            'username.required'  => 'Username is required',
-           'phone.required'     => 'Username is required',
+           'phone.required'     => 'Phone is required',
            'email.required'     => 'The email field is required',
            'email.unique'       => 'User with this email is already exists',
            'password.required'  => 'Password is required',
@@ -50,6 +52,14 @@ class RegisterRequest extends FormRequest
             $attributes['password'] = Hash::make($attributes['password']);
             $this->replace($attributes);
         }
-        return $validator;
+     return $validator;
+    }
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'success' => 0,
+            'type' => 'error',
+            'message' => $validator->errors()
+        ], 422));
     }
 }

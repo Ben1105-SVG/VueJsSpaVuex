@@ -3,11 +3,18 @@ import guest from '../middleware/guest'
 export const routes = [
     {
         name: 'login',
-        path: '/',
+        path: '/login/:id?',
         component: () => import('../views/Login'),
         meta: {
             middleware: [guest]
-        }
+        },
+        props: (route) => {
+            const userId = Number.parseInt(route.params.id, 10)
+                if (Number.isNaN(userId)) {
+                    route.params.id = ''
+                }
+                return { userId }
+            }
     },
     {
         name: 'register',
@@ -16,6 +23,11 @@ export const routes = [
         meta: {
             middleware: [guest]
         }
+    },
+    {
+        name: 'Not found',
+        path: '*',
+        component: () => import('../views/404-page'),
     },
     {
         name: 'posts',
@@ -42,8 +54,16 @@ export const routes = [
         }
     },
     {
+        name: 'UpdatePost',
+        path: '/posts/edit/:id',
+        component: () => import('../views/updatePost'),
+        meta: {
+            middleware: [auth]
+        }
+    },
+    {
         name: 'home',
-        path: '/home',
+        path: '/',
         component: () => import('../views/Home'),
         meta: {
             middleware: [auth]

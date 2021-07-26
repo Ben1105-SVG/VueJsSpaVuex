@@ -17,11 +17,15 @@ export default{
 
     actions:{
         registration_form_submit({commit} ,params) {
-            axios.post(`api/register`,params)
-                .then(function (response) {
-                    commit('SET_FORM_FIELDS', response.data.success)
-                }).catch((error)=>{
-                    commit('SET_ERRORS',error.response.data.message)
+            return new Promise((resolve,reject)=>{
+                axios.post(`api/register`,params)
+                    .then(function (response) {
+                        commit('SET_FORM_FIELDS', response.data)
+                        resolve({...response.data})
+                    }).catch((error)=>{
+                        commit('SET_ERRORS',error.response.data.message)
+                        reject(error.response.data.message)
+                })
             })
         },
 
@@ -31,8 +35,5 @@ export default{
         getFormResponse(state) {
             return state.form_response
         },
-        get_auth_user(state) {
-            return 456
-        }
     }
 }

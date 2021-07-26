@@ -56,12 +56,20 @@ class PostController extends Controller
      */
     public function destroy(Request $request)
     {
-        $post = Post::findOrFail($request->id);
-        if (Gate::denies('destroy',$post)){
-           abort(403);
-        };
         $this->repository->destroy($request->id);
         return response()->json(['success'=>"Post was successfully destroyed"]);
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        return $this->repository->show($id);
     }
 
     /**

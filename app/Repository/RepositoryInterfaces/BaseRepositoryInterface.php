@@ -34,4 +34,10 @@ interface BaseRepositoryInterface
      */
     public function destroy($id);
 
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function show($id);
+
 }

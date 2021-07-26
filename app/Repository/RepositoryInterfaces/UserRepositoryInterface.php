@@ -20,4 +20,16 @@ interface UserRepositoryInterface
      * @return mixed
      */
     public function update(array $details, $id);
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function verify_email($id);
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function checkIfEmailIsVerified($id);
 }

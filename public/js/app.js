@@ -1935,6 +1935,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var js_cookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! js-cookie */ "./node_modules/js-cookie/src/js.cookie.js");
+/* harmony import */ var js_cookie__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(js_cookie__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -1968,9 +1970,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "header-top",
-  created: function created() {
+  data: function data() {
+    return {
+      user_token: false
+    };
+  },
+  watch: {
+    $route: function $route(to, from) {
+      this.user_token = js_cookie__WEBPACK_IMPORTED_MODULE_0___default().get('user_token') ? true : false;
+    }
+  },
+  mounted: function mounted() {
     this.$store.dispatch('User/get_user_data');
   },
   methods: {
@@ -1978,7 +2008,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$store.dispatch('log_out').then(function () {
-        _this.$router.push('/');
+        _this.$router.push('/login');
       });
     }
   }
@@ -2097,12 +2127,23 @@ __webpack_require__.r(__webpack_exports__);
 
 var routes = [{
   name: 'login',
-  path: '/',
+  path: '/login/:id?',
   component: function component() {
     return __webpack_require__.e(/*! import() */ "resources_js_views_Login_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../views/Login */ "./resources/js/views/Login.vue"));
   },
   meta: {
     middleware: [_middleware_guest__WEBPACK_IMPORTED_MODULE_1__.default]
+  },
+  props: function props(route) {
+    var userId = Number.parseInt(route.params.id, 10);
+
+    if (Number.isNaN(userId)) {
+      route.params.id = '';
+    }
+
+    return {
+      userId: userId
+    };
   }
 }, {
   name: 'register',
@@ -2112,6 +2153,12 @@ var routes = [{
   },
   meta: {
     middleware: [_middleware_guest__WEBPACK_IMPORTED_MODULE_1__.default]
+  }
+}, {
+  name: 'Not found',
+  path: '*',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_views_404-page_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../views/404-page */ "./resources/js/views/404-page.vue"));
   }
 }, {
   name: 'posts',
@@ -2141,8 +2188,17 @@ var routes = [{
     middleware: [_middleware_auth__WEBPACK_IMPORTED_MODULE_0__.default]
   }
 }, {
+  name: 'UpdatePost',
+  path: '/posts/edit/:id',
+  component: function component() {
+    return __webpack_require__.e(/*! import() */ "resources_js_views_updatePost_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../views/updatePost */ "./resources/js/views/updatePost.vue"));
+  },
+  meta: {
+    middleware: [_middleware_auth__WEBPACK_IMPORTED_MODULE_0__.default]
+  }
+}, {
   name: 'home',
-  path: '/home',
+  path: '/',
   component: function component() {
     return __webpack_require__.e(/*! import() */ "resources_js_views_Home_vue").then(__webpack_require__.bind(__webpack_require__, /*! ../views/Home */ "./resources/js/views/Home.vue"));
   },
@@ -2211,6 +2267,10 @@ __webpack_require__.r(__webpack_exports__);
           reject(error);
         });
       });
+    },
+    checkIfVerifiedEmail: function checkIfVerifiedEmail(_ref3, id) {
+      var commit = _ref3.commit;
+      axios.get("verify_account/".concat(id)).then(function (response) {})["catch"](function (error) {});
     }
   },
   getters: {
@@ -2236,6 +2296,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   state: {
     form_response: {
@@ -2254,19 +2320,20 @@ __webpack_require__.r(__webpack_exports__);
   actions: {
     registration_form_submit: function registration_form_submit(_ref, params) {
       var commit = _ref.commit;
-      axios.post("api/register", params).then(function (response) {
-        commit('SET_FORM_FIELDS', response.data.success);
-      })["catch"](function (error) {
-        commit('SET_ERRORS', error.response.data.message);
+      return new Promise(function (resolve, reject) {
+        axios.post("api/register", params).then(function (response) {
+          commit('SET_FORM_FIELDS', response.data);
+          resolve(_objectSpread({}, response.data));
+        })["catch"](function (error) {
+          commit('SET_ERRORS', error.response.data.message);
+          reject(error.response.data.message);
+        });
       });
     }
   },
   getters: {
     getFormResponse: function getFormResponse(state) {
       return state.form_response;
-    },
-    get_auth_user: function get_auth_user(state) {
-      return 456;
     }
   }
 });
@@ -2375,7 +2442,8 @@ __webpack_require__.r(__webpack_exports__);
   state: {
     posts: {},
     errors: {},
-    allPosts: {}
+    allPosts: {},
+    specified_post: {}
   },
   mutations: {
     SET_POSTS: function SET_POSTS(state, data) {
@@ -2386,6 +2454,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     SET_ERRORS: function SET_ERRORS(state, data) {
       state.errors = data;
+    },
+    SET_SPECIFIED_POST: function SET_SPECIFIED_POST(state, data) {
+      state.specified_post = data;
     }
   },
   actions: {
@@ -2463,8 +2534,27 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
-    destroy: function destroy(_ref5, id) {
+    post_show: function post_show(_ref5, id) {
       var commit = _ref5.commit;
+      return new Promise(function (replace, reject) {
+        var token = Cookies.get('user_token');
+        axios.get("/api/post/show/".concat(id), {
+          headers: {
+            'Accept': 'application/json',
+            'content-type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }).then(function (response) {
+          commit('SET_SPECIFIED_POST', response);
+          replace(response);
+        })["catch"](function (error) {
+          commit('SET_ERRORS', error.response.data.message);
+          reject(error);
+        });
+      });
+    },
+    destroy: function destroy(_ref6, id) {
+      var commit = _ref6.commit;
       return new Promise(function (resolve, reject) {
         var token = Cookies.get('user_token');
         axios.post('/api/post/delete', {
@@ -2493,6 +2583,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     get_all_errors: function get_all_errors(state) {
       return state.errors;
+    },
+    get_specified_post: function get_specified_post(state) {
+      return state.specified_post;
     }
   },
   namespaced: true
@@ -49310,7 +49403,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Lato:400,400i,700);"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "* {\n    box-sizing: border-box;\n}\n\nhtml {\n    height: 100%;\n}\n\nbody {\n    background-color: #354152;\n    color: #7e8ba3;\n    font: 300 1rem/1.5 Helvetica Neue, sans-serif;\n    margin: 0;\n    min-height: 100%;\n}\n\n.align {\n    align-items: center;\n    display: flex;\n    flex-direction: row;\n}\n\n.align__item--start {\n    align-self: flex-start;\n}\n\n.align__item--end {\n    align-self: flex-end;\n}\n\n.site__logo {\n    margin-bottom: 2rem;\n}\n\ninput {\n    border: 0;\n    font: inherit;\n}\n\ninput::-moz-placeholder {\n    color: #7e8ba3;\n}\n\ninput:-ms-input-placeholder {\n    color: #7e8ba3;\n}\n\ninput::placeholder {\n    color: #7e8ba3;\n}\n\n.form__field {\n    margin-bottom: 1rem;\n}\n\n.form input {\n    outline: 0;\n    padding: .5rem 1rem;\n}\n\n.form input{\n    width: 100%;\n}\n\n.grid {\n    margin: 0 auto;\n    max-width: 25rem;\n    width: 100%;\n}\n\nh2 {\n    font-size: 2.75rem;\n    font-weight: 100;\n    margin: 0 0 1rem;\n    text-transform: uppercase;\n}\n\nsvg {\n    height: auto;\n    max-width: 100%;\n    vertical-align: middle;\n}\n\na {\n    color: #7e8ba3;\n}\n\n.register {\n    box-shadow: 0 0 250px #000;\n    text-align: center;\n    padding: 4rem 2rem;\n}\n\n.register input {\n    border: 1px solid #242c37;\n    border-radius: 999px;\n    background-color: transparent;\n    text-align: center;\n}\n\n.register input[type=\"email\"], .register input[type=\"password\"] {\n    background-repeat: no-repeat;\n    background-size: 1.5rem;\n    background-position: 1rem 50%;\n}\n\n.register input[type=\"email\"] {\n    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\" fill=\"#242c37\"><path d=\"M256.017 273.436l-205.17-170.029h410.904l-205.734 170.029zm-.034 55.462l-205.983-170.654v250.349h412v-249.94l-206.017 170.245z\"/></svg>');\n}\n\n.register input[type=\"password\"] {\n    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\" fill=\"#242c37\"><path d=\"M195.334 223.333h-50v-62.666c0-61.022 49.645-110.667 110.666-110.667 61.022 0 110.667 49.645 110.667 110.667v62.666h-50v-62.666c0-33.452-27.215-60.667-60.667-60.667-33.451 0-60.666 27.215-60.666 60.667v62.666zm208.666 30v208.667h-296v-208.667h296zm-121 87.667c0-14.912-12.088-27-27-27s-27 12.088-27 27c0 7.811 3.317 14.844 8.619 19.773 4.385 4.075 6.881 9.8 6.881 15.785v22.942h23v-22.941c0-5.989 2.494-11.708 6.881-15.785 5.302-4.93 8.619-11.963 8.619-19.774z\"/></svg>');\n}\n\n.register input[type=\"submit\"] {\n    background: peru;\n    color: #fff;\n    margin-bottom: 6rem;\n    width: 100%;\n}\n.form__field .bg-danger{\n    border: 1px solid red!important;\n    color: red!important;\n    background: white!important;\n    padding: 10px;\n    width: 100%;\n    text-align: center;\n}\n.posts h2{\n    text-align: center;\n}\nsection.posts{\n    padding: 20px;\n    background: rgb(205 133 63 / 59%);\n    border-radius: 20px;\n    width: 40%;\n    margin: 120px auto;\n}\n.form-cont textarea{\n    width: 80%;\n    border-radius: 20px;\n    outline: none;\n    padding: 10px;\n    border: 1px solid gray\n}\n.alert-success{\n    background-color: #4dc0b5;\n    padding: 10px;\n    border-radius: 10px;\n    border: 1px solid darkcyan;\n    margin-bottom: 10px;\n}\n.form-cont{\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    flex-direction: column;\n}\nlabel[for=textarea_post]{\n    width: 71%;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n}\n.custom-file{\n    margin-top: 20px;\n    margin-bottom: 20px;\n    width: 60%;\n    height: unset;\n}\n.form-cont button{\n    outline: none;\n}\nbody{margin-top:20px;\n    background:#eee;\n}\n\nbody {\n    margin: 0;\n    font-family: 'Lato', sans-serif;\n}\n\n.header {\n    padding-top: 20px;\n    background: peru;\n    color: white;\n    -webkit-clip-path: ellipse(100vw 60vh at 50% 50%);\n            clip-path: ellipse(100vw 60vh at 50% 50%);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border-bottom-left-radius: 20px;\n    border-bottom-right-radius: 20px;\n    box-shadow: 0px 16px 15px 11px rgba(0,0,0,0.23)\n;\n}\n\n.details {\n    text-align: center;\n    width: 45%;\n}\n.profile{\n    padding-bottom: 27px;\n    margin-bottom: 30px;\n    border-bottom: 2px solid lightgray;\n}\n.profile-pic {\n    height: 6rem;\n    width: 6rem;\n    -o-object-fit: center;\n       object-fit: center;\n    border-radius: 50%;\n    border: 2px solid #fff;\n}\n\n.location p {\n    display: inline-block;\n}\n\n.location svg {\n    vertical-align: middle;\n}\n\n.stats {\n    display: flex;\n    justify-content: space-evenly;\n    width: 100%;\n}\n\n.stats .col-4 {\n    width: 10rem;\n    text-align: center;\n}\n\n.heading {\n    font-weight: 400;\n    font-size: 1.3rem;\n    margin: 1rem 0;\n}\n.edit_profile{\n    justify-content: center;\n    padding: 25px;\n\n}\n.big_conteiner{\n    background: #fff;\n}\n.btn_submit_form{\n    background: peru;\n    border:unset;\n    outline: none;\n    color: #fff;\n    opacity: 0.7;\n}\n.btn_submit_form:hover{\n    opacity: 1;\n    color: #fff;\n}\n.header{\n    position: relative;\n}\n.logOut{\n    right: 15px;\n    top: 18px;\n    font-weight: bold;\n    position: absolute;\n    cursor: pointer;\n}\n.logOut:hover{\n    opacity: 0.5;\n}\n.form-check-label{\n    margin-right: 30px;\n}\n.modal-confirm {\n    color: #434e65;\n    width: 525px;\n}\n.modal-confirm .modal-content {\n    padding: 20px;\n    font-size: 16px;\n    border-radius: 5px;\n    border: none;\n}\n.modal-confirm .modal-header {\n    background: #47c9a2;\n    border-bottom: none;\n    position: relative;\n    text-align: center;\n    margin: -20px -20px 0;\n    border-radius: 5px 5px 0 0;\n    padding: 35px;\n}\n.modal-confirm h4 {\n    text-align: center;\n    font-size: 36px;\n    margin: 10px 0;\n}\n.modal-confirm .form-control, .modal-confirm .btn {\n    min-height: 40px;\n    border-radius: 3px;\n}\n.modal-confirm .close {\n    position: absolute;\n    top: 15px;\n    right: 15px;\n    color: #fff;\n    text-shadow: none;\n    opacity: 0.5;\n}\n.modal-confirm .close:hover {\n    opacity: 0.8;\n}\n.modal-confirm .icon-box {\n    color: #fff;\n    width: 95px;\n    height: 95px;\n    display: inline-block;\n    border-radius: 50%;\n    z-index: 9;\n    border: 5px solid #fff;\n    padding: 15px;\n    text-align: center;\n}\n.modal-confirm .icon-box i {\n    font-size: 64px;\n    margin: -4px 0 0 -4px;\n}\n.modal-confirm.modal-dialog {\n    margin-top: 80px;\n}\n.modal-confirm .btn, .modal-confirm .btn:active {\n    color: #fff;\n    border-radius: 4px;\n    background: #eeb711 !important;\n    text-decoration: none;\n    transition: all 0.4s;\n    line-height: normal;\n    border-radius: 30px;\n    margin-top: 10px;\n    padding: 6px 20px;\n    border: none;\n}\n.modal-confirm .btn:hover, .modal-confirm .btn:focus {\n    background: #eda645 !important;\n    outline: none;\n}\n.modal-confirm .btn span {\n    margin: 1px 3px 0;\n    float: left;\n}\n.modal-confirm .btn i {\n    margin-left: 1px;\n    font-size: 20px;\n    float: right;\n}\n.trigger-btn {\n    display: inline-block;\n    margin: 100px auto;\n}\n.post-card{\n    margin-bottom: 25px;\n}\n.change_post{\n    display: flex;\n    justify-content: flex-end;\n}\n.change_post svg{\n    cursor: pointer;\n    margin:  0 5px\n}\n.change_post svg:hover{\n    opacity: 0.7;\n}\n.change_input{\n    outline: none;\n    border: none;\n    width: 100%;\n    background: #e2e2e2;\n    border: 1px solid lightgray;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "* {\n    box-sizing: border-box;\n    color: black!important;\n}\n* a:hover{\n    color: black;\n    opacity: 0.5;\n}\n\nhtml {\n    height: 100%;\n}\n\nbody {\n    background-color: #354152;\n    color: #7e8ba3;\n    font: 300 1rem/1.5 Helvetica Neue, sans-serif;\n    margin: 0;\n    min-height: 100%;\n}\n\n.align {\n    align-items: center;\n    display: flex;\n    flex-direction: row;\n}\n\n.align__item--start {\n    align-self: flex-start;\n}\n\n.align__item--end {\n    align-self: flex-end;\n}\n\n.site__logo {\n    margin-bottom: 2rem;\n}\n\ninput {\n    border: 0;\n    font: inherit;\n}\n\ninput::-moz-placeholder {\n    color: #7e8ba3;\n}\n\ninput:-ms-input-placeholder {\n    color: #7e8ba3;\n}\n\ninput::placeholder {\n    color: #7e8ba3;\n}\n\n.form__field {\n    margin-bottom: 1rem;\n}\n\n.form input {\n    outline: 0;\n    padding: .5rem 1rem;\n}\n\n.form input{\n    width: 100%;\n}\n\n.grid {\n    margin: 0 auto;\n    max-width: 25rem;\n    width: 100%;\n}\n\nh2 {\n    font-size: 2.75rem;\n    font-weight: 100;\n    margin: 0 0 1rem;\n    text-transform: uppercase;\n}\n\nsvg {\n    height: auto;\n    max-width: 100%;\n    vertical-align: middle;\n}\n\na {\n    color: #7e8ba3;\n}\n\n.register {\n    box-shadow: 0 0 250px #000;\n    text-align: center;\n    padding: 4rem 2rem;\n}\n\n.register input {\n    border: 1px solid #242c37;\n    border-radius: 999px;\n    background-color: transparent;\n    text-align: center;\n}\n\n.register input[type=\"email\"], .register input[type=\"password\"] {\n    background-repeat: no-repeat;\n    background-size: 1.5rem;\n    background-position: 1rem 50%;\n}\n\n.register input[type=\"email\"] {\n    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\" fill=\"#242c37\"><path d=\"M256.017 273.436l-205.17-170.029h410.904l-205.734 170.029zm-.034 55.462l-205.983-170.654v250.349h412v-249.94l-206.017 170.245z\"/></svg>');\n}\n\n.register input[type=\"password\"] {\n    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\" fill=\"#242c37\"><path d=\"M195.334 223.333h-50v-62.666c0-61.022 49.645-110.667 110.666-110.667 61.022 0 110.667 49.645 110.667 110.667v62.666h-50v-62.666c0-33.452-27.215-60.667-60.667-60.667-33.451 0-60.666 27.215-60.666 60.667v62.666zm208.666 30v208.667h-296v-208.667h296zm-121 87.667c0-14.912-12.088-27-27-27s-27 12.088-27 27c0 7.811 3.317 14.844 8.619 19.773 4.385 4.075 6.881 9.8 6.881 15.785v22.942h23v-22.941c0-5.989 2.494-11.708 6.881-15.785 5.302-4.93 8.619-11.963 8.619-19.774z\"/></svg>');\n}\n\n.register input[type=\"submit\"] {\n    background: #43C6AC;  /* fallback for old browsers */  /* Chrome 10-25, Safari 5.1-6 */\n    background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */\n\n    color: #fff;\n    margin-bottom: 6rem;\n    width: 100%;\n}\n.form__field .bg-danger{\n    border: 1px solid red!important;\n    color: red!important;\n    background: white!important;\n    padding: 10px;\n    width: 100%;\n    text-align: center;\n}\n.posts h2{\n    text-align: center;\n}\nsection.posts{\n    padding: 20px;\n    background: #43C6AC;  /* fallback for old browsers */  /* Chrome 10-25, Safari 5.1-6 */\n    background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */\n\n    border-radius: 20px;\n    width: 40%;\n    margin: 120px auto;\n}\n.form-cont textarea{\n    width: 80%;\n    border-radius: 20px;\n    outline: none;\n    padding: 10px;\n    border: 1px solid gray\n}\n.alert-success{\n    background-color: #4dc0b5;\n    padding: 10px;\n    border-radius: 10px;\n    border: 1px solid darkcyan;\n    margin-bottom: 10px;\n}\n.form-cont{\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    flex-direction: column;\n}\nlabel[for=textarea_post]{\n    width: 71%;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    justify-content: center;\n}\n.custom-file{\n    margin-top: 20px;\n    margin-bottom: 20px;\n    width: 60%;\n    height: unset;\n}\n.form-cont button{\n    outline: none;\n}\nbody{margin-top:20px;\n    background:#eee;\n}\n\nbody {\n    margin: 0;\n    font-family: 'Lato', sans-serif;\n}\n\n.header {\n    padding-top: 20px;\n    background: #43C6AC;  /* fallback for old browsers */  /* Chrome 10-25, Safari 5.1-6 */\n    background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */\n\n\n    color: white;\n    -webkit-clip-path: ellipse(100vw 60vh at 50% 50%);\n            clip-path: ellipse(100vw 60vh at 50% 50%);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border-bottom-left-radius: 20px;\n    border-bottom-right-radius: 20px;\n    box-shadow: 0px 16px 15px 11px rgba(0,0,0,0.23)\n;\n}\n\n.details {\n    text-align: center;\n    width: 45%;\n}\n.profile{\n    padding-bottom: 27px;\n    margin-bottom: 30px;\n    border-bottom: 2px solid lightgray;\n}\n.profile-pic {\n    height: 6rem;\n    width: 6rem;\n    -o-object-fit: center;\n       object-fit: center;\n    border-radius: 50%;\n    border: 2px solid #fff;\n}\n\n.location p {\n    display: inline-block;\n}\n\n.location svg {\n    vertical-align: middle;\n}\n\n.stats {\n    display: flex;\n    justify-content: space-evenly;\n    width: 100%;\n}\n\n.stats .col-4 {\n    width: 10rem;\n    text-align: center;\n}\n\n.heading {\n    font-weight: 400;\n    font-size: 1.3rem;\n    margin: 1rem 0;\n}\n.edit_profile{\n    justify-content: center;\n    padding: 25px;\n\n}\n.big_conteiner{\n    background: #fff;\n}\n.btn_submit_form{\n    background: #43C6AC;  /* fallback for old browsers */  /* Chrome 10-25, Safari 5.1-6 */\n    background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */\n\n\n    border:unset;\n    outline: none;\n    color: #fff;\n    opacity: 0.7;\n}\n.btn_submit_form:hover{\n    opacity: 1;\n    color: #fff;\n}\n.header{\n    position: relative;\n}\n.logOut{\n    right: 15px;\n    top: 18px;\n    font-weight: bold;\n    position: absolute;\n    cursor: pointer;\n}\n.logOut:hover{\n    opacity: 0.5;\n}\n.form-check-label{\n    margin-right: 30px;\n}\n.modal-confirm {\n    color: #434e65;\n    width: 525px;\n}\n.modal-confirm .modal-content {\n    padding: 20px;\n    font-size: 16px;\n    border-radius: 5px;\n    border: none;\n}\n.modal-confirm .modal-header {\n    background: #47c9a2;\n    border-bottom: none;\n    position: relative;\n    text-align: center;\n    margin: -20px -20px 0;\n    border-radius: 5px 5px 0 0;\n    padding: 35px;\n}\n.modal-confirm h4 {\n    text-align: center;\n    font-size: 36px;\n    margin: 10px 0;\n}\n.modal-confirm .form-control, .modal-confirm .btn {\n    min-height: 40px;\n    border-radius: 3px;\n}\n.modal-confirm .close {\n    position: absolute;\n    top: 15px;\n    right: 15px;\n    color: #fff;\n    text-shadow: none;\n    opacity: 0.5;\n}\n.modal-confirm .close:hover {\n    opacity: 0.8;\n}\n.modal-confirm .icon-box {\n    color: #fff;\n    width: 95px;\n    height: 95px;\n    display: inline-block;\n    border-radius: 50%;\n    z-index: 9;\n    border: 5px solid #fff;\n    padding: 15px;\n    text-align: center;\n}\n.modal-confirm .icon-box i {\n    font-size: 64px;\n    margin: -4px 0 0 -4px;\n}\n.modal-confirm.modal-dialog {\n    margin-top: 80px;\n}\n.modal-confirm .btn, .modal-confirm .btn:active {\n    color: #fff;\n    border-radius: 4px;\n    background: #eeb711 !important;\n    text-decoration: none;\n    transition: all 0.4s;\n    line-height: normal;\n    border-radius: 30px;\n    margin-top: 10px;\n    padding: 6px 20px;\n    border: none;\n}\n.modal-confirm .btn:hover, .modal-confirm .btn:focus {\n    background: #eda645 !important;\n    outline: none;\n}\n.modal-confirm .btn span {\n    margin: 1px 3px 0;\n    float: left;\n}\n.modal-confirm .btn i {\n    margin-left: 1px;\n    font-size: 20px;\n    float: right;\n}\n.trigger-btn {\n    display: inline-block;\n    margin: 100px auto;\n}\n.post-card{\n    margin-bottom: 25px;\n}\n.change_post{\n    display: flex;\n    justify-content: flex-end;\n}\n.change_post svg{\n    cursor: pointer;\n    margin:  0 5px\n}\n.change_post svg:hover{\n    opacity: 0.7;\n}\n.change_input{\n    outline: none;\n    border: none;\n    width: 100%;\n    background: #e2e2e2;\n    border: 1px solid lightgray;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -49358,7 +49451,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.navbar[data-v-5be3dc7f]{\n    background-color: peru;\n    padding-bottom: 20px;\n}\n.route-link[data-v-5be3dc7f]{\n    color:inherit;\n    text-decoration:unset\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.navbar[data-v-5be3dc7f]{\n    background: #43C6AC;  /* fallback for old browsers */  /* Chrome 10-25, Safari 5.1-6 */\n    background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */;\n    padding-bottom: 20px;\n}\n.route-link[data-v-5be3dc7f]{\n    color:inherit;\n    text-decoration:unset\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -81986,99 +82079,108 @@ var render = function() {
   return _c(
     "div",
     [
-      _c(
-        "b-navbar",
-        { attrs: { toggleable: "lg", type: "dark" } },
-        [
-          _c(
-            "b-navbar-brand",
+      _vm.user_token
+        ? _c(
+            "b-navbar",
+            { attrs: { toggleable: "lg", type: "dark" } },
             [
               _c(
-                "router-link",
-                { staticClass: "route-link", attrs: { to: "/home" } },
-                [_vm._v("Home")]
-              )
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("b-navbar-toggle", { attrs: { target: "nav-collapse" } }),
-          _vm._v(" "),
-          _c(
-            "b-collapse",
-            { attrs: { id: "nav-collapse", "is-nav": "" } },
-            [
-              _c(
-                "b-navbar-nav",
+                "b-navbar-brand",
                 [
                   _c(
                     "router-link",
-                    {
-                      staticClass: "route-link nav-item nav-link",
-                      attrs: { to: "/posts/all" }
-                    },
-                    [_vm._v("All Posts")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "router-link",
-                    {
-                      staticClass: "route-link nav-item nav-link",
-                      attrs: { to: "/posts" }
-                    },
-                    [_vm._v("My Posts")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "router-link",
-                    {
-                      staticClass: "route-link nav-item nav-link",
-                      attrs: { to: "/posts/add" }
-                    },
-                    [_vm._v("Add Post")]
+                    { staticClass: "route-link", attrs: { to: "/" } },
+                    [_vm._v("Home")]
                   )
                 ],
                 1
               ),
               _vm._v(" "),
+              _c("b-navbar-toggle", { attrs: { target: "nav-collapse" } }),
+              _vm._v(" "),
               _c(
-                "b-navbar-nav",
-                { staticClass: "ml-auto" },
+                "b-collapse",
+                { attrs: { id: "nav-collapse", "is-nav": "" } },
                 [
                   _c(
-                    "b-nav-item-dropdown",
-                    { attrs: { text: "Lang", right: "" } },
+                    "b-navbar-nav",
                     [
-                      _c("b-dropdown-item", { attrs: { href: "#" } }, [
-                        _vm._v("EN")
-                      ]),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "route-link nav-item nav-link",
+                          attrs: { to: "/posts/all" }
+                        },
+                        [_vm._v("All Posts")]
+                      ),
                       _vm._v(" "),
-                      _c("b-dropdown-item", { attrs: { href: "#" } }, [
-                        _vm._v("ES")
-                      ])
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "route-link nav-item nav-link",
+                          attrs: { to: "/posts" }
+                        },
+                        [_vm._v("My Posts")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "route-link nav-item nav-link",
+                          attrs: { to: "/posts/add" }
+                        },
+                        [_vm._v("Add Post")]
+                      )
                     ],
                     1
                   ),
                   _vm._v(" "),
                   _c(
-                    "b-nav-item-dropdown",
-                    {
-                      attrs: { right: "" },
-                      scopedSlots: _vm._u([
-                        {
-                          key: "button-content",
-                          fn: function() {
-                            return [_c("em", [_vm._v("User")])]
-                          },
-                          proxy: true
-                        }
-                      ])
-                    },
+                    "b-navbar-nav",
+                    { staticClass: "ml-auto" },
                     [
+                      _c(
+                        "b-nav-item-dropdown",
+                        { attrs: { text: "Lang", right: "" } },
+                        [
+                          _c("b-dropdown-item", { attrs: { href: "#" } }, [
+                            _vm._v("EN")
+                          ]),
+                          _vm._v(" "),
+                          _c("b-dropdown-item", { attrs: { href: "#" } }, [
+                            _vm._v("ES")
+                          ])
+                        ],
+                        1
+                      ),
                       _vm._v(" "),
-                      _c("b-dropdown-item", { on: { click: _vm.logOut } }, [
-                        _vm._v("Sign Out")
-                      ])
+                      _c(
+                        "b-nav-item-dropdown",
+                        {
+                          attrs: { right: "" },
+                          scopedSlots: _vm._u(
+                            [
+                              {
+                                key: "button-content",
+                                fn: function() {
+                                  return [_c("em", [_vm._v("User")])]
+                                },
+                                proxy: true
+                              }
+                            ],
+                            null,
+                            false,
+                            4258386881
+                          )
+                        },
+                        [
+                          _vm._v(" "),
+                          _c("b-dropdown-item", { on: { click: _vm.logOut } }, [
+                            _vm._v("Sign Out")
+                          ])
+                        ],
+                        1
+                      )
                     ],
                     1
                   )
@@ -82088,9 +82190,67 @@ var render = function() {
             ],
             1
           )
-        ],
-        1
-      )
+        : _c(
+            "b-navbar",
+            { attrs: { toggleable: "lg", type: "dark" } },
+            [
+              _c("b-navbar-toggle", { attrs: { target: "nav-collapse" } }),
+              _vm._v(" "),
+              _c(
+                "b-collapse",
+                { attrs: { id: "nav-collapse", "is-nav": "" } },
+                [
+                  _c(
+                    "b-navbar-nav",
+                    [
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "route-link nav-item nav-link",
+                          attrs: { to: "/register" }
+                        },
+                        [_vm._v("Registration")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "route-link nav-item nav-link",
+                          attrs: { to: "/login" }
+                        },
+                        [_vm._v("Login")]
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-navbar-nav",
+                    { staticClass: "ml-auto" },
+                    [
+                      _c(
+                        "b-nav-item-dropdown",
+                        { attrs: { text: "Lang", right: "" } },
+                        [
+                          _c("b-dropdown-item", { attrs: { href: "#" } }, [
+                            _vm._v("EN")
+                          ]),
+                          _vm._v(" "),
+                          _c("b-dropdown-item", { attrs: { href: "#" } }, [
+                            _vm._v("ES")
+                          ])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
     ],
     1
   )
@@ -98759,7 +98919,7 @@ var index = {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames not based on template
-/******/ 			if ({"resources_js_views_Login_vue":1,"resources_js_views_Register_vue":1,"resources_js_views_Posts_vue":1,"resources_js_views_allPosts_vue":1,"resources_js_views_addPost_vue":1,"resources_js_views_Home_vue":1}[chunkId]) return "js/" + chunkId + ".js";
+/******/ 			if ({"resources_js_views_Login_vue":1,"resources_js_views_Register_vue":1,"resources_js_views_404-page_vue":1,"resources_js_views_Posts_vue":1,"resources_js_views_allPosts_vue":1,"resources_js_views_addPost_vue":1,"resources_js_views_updatePost_vue":1,"resources_js_views_Home_vue":1}[chunkId]) return "js/" + chunkId + ".js";
 /******/ 			// return url for filenames based on template
 /******/ 			return undefined;
 /******/ 		};

@@ -87,24 +87,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     send_form: function send_form() {
-      this.$store.dispatch('registration_form_submit', this.form_fields);
-    }
-  },
-  watch: {
-    getSuccess: function getSuccess() {
-      this.success = this.getSuccess;
-      this.$router.push('login');
-    },
-    getErrors: function getErrors() {
-      this.errors = this.getErrors;
-    }
-  },
-  computed: {
-    getSuccess: function getSuccess() {
-      return this.$store.getters.getFormResponse.success;
-    },
-    getErrors: function getErrors() {
-      return this.$store.getters.getFormResponse.errors;
+      var _this = this;
+
+      this.$store.dispatch('registration_form_submit', this.form_fields).then(function (response) {
+        _this.success = response;
+
+        _this.$router.push({
+          name: 'login',
+          params: response
+        });
+      })["catch"](function (error) {
+        _this.errors = error;
+      });
     }
   }
 });
@@ -294,8 +288,8 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
-                      value: _vm.getErrors.username,
-                      expression: "getErrors.username"
+                      value: _vm.errors.username,
+                      expression: "errors.username"
                     }
                   ],
                   staticClass: "form__field"
@@ -304,7 +298,7 @@ var render = function() {
                   _c("input", {
                     staticClass: "bg-danger",
                     attrs: { type: "text", disabled: "" },
-                    domProps: { value: _vm.getErrors.username }
+                    domProps: { value: _vm.errors.username }
                   })
                 ]
               ),
@@ -344,8 +338,8 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
-                      value: _vm.getErrors.phone,
-                      expression: "getErrors.phone"
+                      value: _vm.errors.phone,
+                      expression: "errors.phone"
                     }
                   ],
                   staticClass: "form__field"
@@ -354,7 +348,7 @@ var render = function() {
                   _c("input", {
                     staticClass: "bg-danger",
                     attrs: { type: "text", disabled: "" },
-                    domProps: { value: _vm.getErrors.phone }
+                    domProps: { value: _vm.errors.phone }
                   })
                 ]
               ),
@@ -394,8 +388,8 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
-                      value: _vm.getErrors.email,
-                      expression: "getErrors.email"
+                      value: _vm.errors.email,
+                      expression: "errors.email"
                     }
                   ],
                   staticClass: "form__field"
@@ -404,7 +398,7 @@ var render = function() {
                   _c("input", {
                     staticClass: "bg-danger",
                     attrs: { type: "text", disabled: "" },
-                    domProps: { value: _vm.getErrors.email }
+                    domProps: { value: _vm.errors.email }
                   })
                 ]
               ),
@@ -444,8 +438,8 @@ var render = function() {
                     {
                       name: "show",
                       rawName: "v-show",
-                      value: _vm.getErrors.password,
-                      expression: "getErrors.password"
+                      value: _vm.errors.password,
+                      expression: "errors.password"
                     }
                   ],
                   staticClass: "form__field"
@@ -454,7 +448,7 @@ var render = function() {
                   _c("input", {
                     staticClass: "bg-danger",
                     attrs: { type: "text", disabled: "" },
-                    domProps: { value: _vm.getErrors.password }
+                    domProps: { value: _vm.errors.password }
                   })
                 ]
               ),

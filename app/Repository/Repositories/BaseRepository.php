@@ -67,5 +67,9 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->find($id)->delete();
     }
+    public function show($id)
+    {
+         return $this->model->find($id);  // TODO: Implement show() method.
+    }
 
 }

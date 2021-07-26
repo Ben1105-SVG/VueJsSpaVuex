@@ -14,21 +14,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::get('/',[\App\Http\Controllers\Auth\LoginController::class,'index'])->name('Auth.login');
+//Route::get('/{token?}',[\App\Http\Controllers\Auth\LoginController::class,'index'])->name('Auth.login');
 Route::post('/',[\App\Http\Controllers\Auth\LoginController::class,'store'])->name('login.store');
-Route::post('/logout',[\App\Http\Controllers\Auth\LoginController::class,'logOut'])->middleware('auth:api');
 Route::resource('register',\App\Http\Controllers\Auth\RegisterController::class);
-Route::get('/home',[\App\Http\Controllers\HomeController::class,'index'])->name('home.index')->middleware('auth:api');
-Route::group(['prefix'=>'user','middleware'=>'auth:api'],function(){
-    Route::post('update/{id}',[\App\Http\Controllers\Auth\ProfileController::class,'update']);
+Route::get('verify_account/{id}',[\App\Http\Controllers\Auth\RegisterController::class,'verify_email']);
+Route::get('checkVerifiedEmail/{id}',[\App\Http\Controllers\UserController::class,'checkIfVerifiedEmail']);
+Route::group(['middleware'=>'auth:api'],function (){
+
+    Route::get('/home',[\App\Http\Controllers\HomeController::class,'index'])->name('home.index');
+
+    //    Routes for User
+    Route::group(['prefix'=>'user'],function(){
+        Route::get('/', function (Request $request) { return $request->user(); });
+        Route::post('update/{id}',[\App\Http\Controllers\Auth\ProfileController::class,'update']);
+    });
+
+
+    // Routes for Post
+    Route::group(['prefix'=>'post'],function(){
+        Route::get('/',[\App\Http\Controllers\PostController::class,'index']);
+        Route::post('/add',[\App\Http\Controllers\PostController::class,'store']);
+        Route::post('/delete',[\App\Http\Controllers\PostController::class,'destroy']);
+        Route::get('/all',[\App\Http\Controllers\PostController::class,'selectAll']);
+        Route::post('/update',[\App\Http\Controllers\PostController::class,'update']);
+        Route::get('/show/{id}',[\App\Http\Controllers\PostController::class,'show']);
+    });
+    Route::post('/logout',[\App\Http\Controllers\Auth\LoginController::class,'logOut']);
+
 });
 
-Route::get('post/',[\App\Http\Controllers\PostController::class,'index'])->middleware('auth:api');
-Route::post('post/add',[\App\Http\Controllers\PostController::class,'store'])->middleware('auth:api');
-Route::post('post/delete',[\App\Http\Controllers\PostController::class,'destroy'])->middleware('auth:api');
-Route::get('post/all',[\App\Http\Controllers\PostController::class,'selectAll'])->middleware('auth:api');
-Route::post('post/update',[\App\Http\Controllers\PostController::class,'update'])->middleware('auth:api');

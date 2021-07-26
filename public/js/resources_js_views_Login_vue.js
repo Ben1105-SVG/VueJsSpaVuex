@@ -48,7 +48,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -57,8 +56,12 @@ __webpack_require__.r(__webpack_exports__);
         password: ''
       },
       success: false,
-      error: []
+      error: [],
+      emailVerified: false
     };
+  },
+  created: function created() {
+    this.emailVerified = this.$route.params.id;
   },
   methods: {
     send_form: function send_form() {
@@ -66,10 +69,13 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$store.dispatch('login_form_submit', this.fieldsData).then(function (response) {
         _this.$store.dispatch('User/get_user_data').then(function () {
-          _this.$router.push('home');
+          _this.$router.push('/');
         });
       });
-    }
+    } // checkEmailVerification(){
+    //     return this.$store.dispatch('checkIfVerifiedEmail',)
+    // },
+
   },
   watch: {
     getErrors: function getErrors() {
@@ -180,6 +186,16 @@ var render = function() {
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("div", { staticClass: "grid align__item" }, [
         _c("div", { staticClass: "register" }, [
+          _vm.emailVerified
+            ? _c("div", { staticClass: "alert-success" }, [
+                _c("p", [
+                  _vm._v(
+                    "\n                        Your email was successfully verified\n                    "
+                  )
+                ])
+              ])
+            : _vm._e(),
+          _vm._v(" "),
           _c(
             "svg",
             {

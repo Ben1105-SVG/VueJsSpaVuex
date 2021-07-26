@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Repository\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends Controller
 {
+    /**
+     * @var
+     */
+    protected $userRepository;
+
+    /**
+     * LoginController constructor.
+     * @param UserRepository $repository
+     */
+    public function __construct(UserRepository $repository)
+    {
+        $this->userRepository = $repository;
+    }
 
     /**
      * @param LoginRequest $request
@@ -18,7 +32,6 @@ class LoginController extends Controller
      */
     public function store(LoginRequest $request)
     {
-
         if(Auth::attempt($request->all())){
             $token = auth()->user()->createToken('MyApp')->accessToken;
 
@@ -37,4 +50,5 @@ class LoginController extends Controller
         DB::table('oauth_access_tokens')->where('user_id');
         return response(['logout' => 'true'], 200);
     }
+
 }

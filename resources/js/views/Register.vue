@@ -13,29 +13,29 @@
                         <div class="form__field">
                             <input type="text" name="username" value="" v-model="form_fields.username"  placeholder="Username">
                         </div>
-                        <div class="form__field" v-show="getErrors.username">
-                              <input type="text" disabled :value=" getErrors.username" class="bg-danger">
+                        <div class="form__field" v-show="errors.username">
+                              <input type="text" disabled :value=" errors.username" class="bg-danger">
                         </div>
 
                         <div class="form__field">
                             <input type="text" name="phone" value="" v-model="form_fields.phone" placeholder="Phone">
                         </div>
-                        <div class="form__field" v-show="getErrors.phone">
-                            <input type="text" disabled :value=" getErrors.phone" class="bg-danger">
+                        <div class="form__field" v-show="errors.phone">
+                            <input type="text" disabled :value=" errors.phone" class="bg-danger">
                         </div>
 
                         <div class="form__field">
                             <input type="email" name="email" value="" v-model="form_fields.email" placeholder="info@mailaddress.com">
                         </div>
-                        <div class="form__field" v-show="getErrors.email">
-                            <input type="text" disabled :value=" getErrors.email" class="bg-danger">
+                        <div class="form__field" v-show="errors.email">
+                            <input type="text" disabled :value=" errors.email" class="bg-danger">
                         </div>
 
                         <div class="form__field">
                             <input type="password" name="password" value="" v-model="form_fields.password" placeholder="•••••••••">
                         </div>
-                        <div class="form__field" v-show="getErrors.password">
-                            <input type="text" disabled :value=" getErrors.password" class="bg-danger">
+                        <div class="form__field" v-show="errors.password">
+                            <input type="text" disabled :value=" errors.password" class="bg-danger">
                         </div>
 
                         <div class="form__field">
@@ -75,25 +75,13 @@ export default {
     },
     methods:{
         send_form(){
-            this.$store.dispatch('registration_form_submit',this.form_fields)
+            this.$store.dispatch('registration_form_submit',this.form_fields).then((response)=>{
+                this.success = response
+                this.$router.push({name:'login',params:response})
+            }).catch((error)=>{
+                this.errors = error
+            })
         }
-    },
-    watch: {
-        getSuccess:function (){
-             this.success = this.getSuccess;
-            this.$router.push('login')
-        },
-        getErrors:function (){
-            this.errors = this.getErrors
-        }
-    },
-    computed:{
-      getSuccess(){
-          return  this.$store.getters.getFormResponse.success
-      },
-      getErrors(){
-          return  this.$store.getters.getFormResponse.errors
-      }
     },
 }
 </script>

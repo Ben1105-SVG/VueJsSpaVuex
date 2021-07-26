@@ -46,6 +46,13 @@ export default{
                 reject(error)
             })
             })
+        },
+        checkIfVerifiedEmail({commit},id){
+            axios.get(`verify_account/${id}`).then((response)=>{
+
+            }).catch((error)=>{
+
+            })
         }
     },
     getters:{

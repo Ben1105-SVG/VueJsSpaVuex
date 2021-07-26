@@ -3,7 +3,8 @@ export default {
     state: {
         posts:{},
         errors:{},
-        allPosts:{}
+        allPosts:{},
+        specified_post:{}
     },
 
     mutations: {
@@ -15,7 +16,10 @@ export default {
         },
         SET_ERRORS(state, data){
             state.errors = data
-        }
+        },
+        SET_SPECIFIED_POST(state, data){
+            state.specified_post = data
+        },
     },
 
     actions: {
@@ -96,6 +100,26 @@ export default {
             })
 
         },
+        post_show({commit},id){
+            return new Promise((replace,reject)=>{
+                let token = Cookies.get('user_token');
+                axios.get(`/api/post/show/${id}`,{
+                    headers: {
+                        'Accept': 'application/json',
+                        'content-type':'application/json',
+                        'Authorization': 'Bearer '+ token,
+                    }
+                })
+                    .then(function (response){
+                        commit('SET_SPECIFIED_POST',response)
+                        replace(response)
+                    }).catch((error)=>{
+                    commit('SET_ERRORS',error.response.data.message)
+                    reject(error)
+                })
+            })
+
+        },
         destroy({commit},id){
             return new Promise((resolve,reject)=>{
                 let token = Cookies.get('user_token');
@@ -124,6 +148,9 @@ export default {
         },
         get_all_errors(state){
             return state.errors
+        },
+        get_specified_post(state){
+            return state.specified_post
         }
     },
 
